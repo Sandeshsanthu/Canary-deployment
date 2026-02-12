@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Loan Eligibility Result</title>
+  </head>
+  <body>
+    <h2>Result: {{ result.chosen.decision }} (served by {{ result.model }})</h2>
+
+    <h3>Key inputs</h3>
+    <pre>{{ data }}</pre>
+
+    <h3>Served model output</h3>
+    <pre>{{ result.chosen }}</pre>
+
+    <h3>Shadow model output (for comparison)</h3>
+ <pre>{{ result.shadow }}</pre>
+
+    <p><a href="/">Try another application</a></p>
+  </body>
+</html>

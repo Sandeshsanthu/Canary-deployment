@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dark-feature
+  namespace: dark
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dark-feature
+  template:
+    metadata:
+      labels:
+        app: dark-feature
+    spec:
+      containers:
+        - name: app
+          image: sandeshs/dark-feature:v2
+          ports:
+            - containerPort: 8000
+          env:
+            - name: UNLEASH_URL
+              value: http://unleash.dark.svc.cluster.local:4242/api/
+            - name: UNLEASH_APP_NAME
+              value: dark-feature
+            - name: UNLEASH_INSTANCE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: UNLEASH_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: unleash-client-token
+                  key: UNLEASH_API_TOKEN
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dark-feature
+  namespace: dark
+spec:
+  selector:
+    app: dark-feature
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  type: LoadBalancer

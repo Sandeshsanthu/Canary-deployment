@@ -1,0 +1,15 @@
+# values.yaml snippet
+unleash:
+  database:
+    host: "your-postgres-host"
+    databaseName: "unleash"
+    username: "unleash"
+    password: "sandesh!S"
+    port: 5432
+  # Enables persistence for PostgreSQL
+  postgresql:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 10Gi
+

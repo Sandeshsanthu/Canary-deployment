@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+unleash-client
+prometheus-client
+UnleashClient
+gunicorn
+fastapi
+uvicorn
+jinja2
+pydantic
+prometheus_client
+UnleashClient
+python-multipart

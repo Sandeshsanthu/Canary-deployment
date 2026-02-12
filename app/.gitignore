@@ -1,0 +1,44 @@
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+.env
+.env.*
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+
+# --- Django / FastAPI runtime artifacts ---
+*.log
+*.sqlite3
+*.db
+media/
+staticfiles/
+
+# --- Tests / coverage ---
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# --- Secrets / keys (keep OUT of git) ---
+*.pem
+*.key
+*.crt
+*.p12
+
+# --- Kubernetes local artifacts (optional) ---
+.kube/
+
