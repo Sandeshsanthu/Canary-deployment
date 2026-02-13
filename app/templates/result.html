@@ -2,20 +2,109 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Loan Eligibility Result</title>
+    <style>
+      :root { --brand:#007CB0; --bg:#f6f8fa; --card:#ffffff; --muted:#63666A; --danger:#DA291C; --ok:#046E38; --warn:#ED8B00; --border:#e5e7eb; }
+      body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans"; background:var(--bg); color:#111827; }
+      .wrap { max-width: 860px; margin: 28px auto; padding: 0 16px; }
+      .card { background:var(--card); border:1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+      .top { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+      .h { margin:0; font-size: 20px; font-weight: 800; }
+      .muted { color: var(--muted); font-size: 13px; margin-top: 6px; }
+      .badge { display:inline-block; padding: 4px 10px; border-radius: 999px; font-weight: 800; font-size: 12px; }
+      .ok { background: rgba(4,110,56,.12); color: var(--ok); }
+      .bad { background: rgba(218,41,28,.12); color: var(--danger); }
+      .warn { background: rgba(237,139,0,.14); color: #7a3d00; }
+      .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-top: 14px; }
+      .k { font-size: 12px; color: var(--muted); }
+      .v { font-size: 16px; font-weight: 800; margin-top: 2px; }
+      .box { border:1px solid var(--border); border-radius: 12px; padding: 12px; }
+      ul { margin: 8px 0 0 18px; }
+      code, pre { background:#0b1220; color:#e5e7eb; border-radius: 12px; padding: 10px; overflow:auto; }
+      a { color: var(--brand); text-decoration: none; font-weight: 700; }
+      @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+    </style>
   </head>
   <body>
-    <h2>Result: {{ result.chosen.decision }} (served by {{ result.model }})</h2>
+    <div class="wrap">
+      <div class="card">
+        <div class="top">
+          <div>
+            {% set d = result.chosen.decision %}
+            <h1 class="h">Decision: {{ d }} <span class="muted">(served by {{ result.model }})</span></h1>
+            <div class="muted">
+              Risk grade: <b>{{ result.chosen.get('risk_grade', 'n/a') }}</b> ·
+              Approval probability: <b>{{ result.chosen.get('approval_probability', 'n/a') }}</b>
+            </div>
+          </div>
 
-    <h3>Key inputs</h3>
-    <pre>{{ data }}</pre>
+          {% if d == "APPROVED" %}
+            <span class="badge ok">APPROVED</span>
+          {% elif d == "MANUAL_REVIEW" %}
+            <span class="badge warn">MANUAL REVIEW</span>
+          {% else %}
+            <span class="badge bad">DECLINED</span>
+          {% endif %}
+        </div>
 
-    <h3>Served model output</h3>
-    <pre>{{ result.chosen }}</pre>
+        <div class="grid">
+          <div class="box">
+            <div class="k">APR (%)</div>
+            <div class="v">{{ result.chosen.apr }}</div>
+          </div>
+          <div class="box">
+            <div class="k">Estimated monthly payment (USD)</div>
+            <div class="v">{{ result.chosen.estimated_monthly_payment }}</div>
+          </div>
+          <div class="box">
+            <div class="k">DTI (debt-to-income)</div>
+            <div class="v">{{ result.chosen.dti }}</div>
+          </div>
+          <div class="box">
+            <div class="k">PTI (payment-to-income)</div>
+            <div class="v">{{ result.chosen.get('pti', 'n/a') }}</div>
+          </div>
+        </div>
 
-    <h3>Shadow model output (for comparison)</h3>
- <pre>{{ result.shadow }}</pre>
+        {% if result.chosen.get('counteroffer_loan_amount') %}
+          <div class="box" style="margin-top:14px;">
+            <div class="k">Counteroffer (max affordable loan)</div>
+            <div class="v">${{ result.chosen.counteroffer_loan_amount }}</div>
+            <div class="muted">Requested amount exceeded affordability caps (demo behavior).</div>
+          </div>
+        {% endif %}
 
-    <p><a href="/">Try another application</a></p>
+        <div class="grid" style="margin-top:14px;">
+          <div class="box">
+            <div class="k">Reasons</div>
+            {% set reasons = result.chosen.get('reasons', []) %}
+            {% if reasons and reasons|length > 0 %}
+              <ul>
+                {% for r in reasons %}
+                  <li>{{ r }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <div class="muted">No adverse reasons returned.</div>
+            {% endif %}
+          </div>
+
+          <div class="box">
+            <div class="k">Shadow model (comparison)</div>
+            <pre>{{ result.shadow }}</pre>
+          </div>
+        </div>
+
+        <div class="box" style="margin-top:14px;">
+          <div class="k">Key inputs</div>
+          <pre>{{ data }}</pre>
+        </div>
+
+        <div style="margin-top:14px;">
+          <a href="/">Try another application</a>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
