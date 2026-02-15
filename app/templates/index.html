@@ -2,36 +2,94 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Loan Eligibility Demo</title>
+    <style>
+      :root { --brand:#007CB0; --bg:#f6f8fa; --card:#ffffff; --muted:#63666A; --danger:#DA291C; --ok:#046E38; --border:#e5e7eb; }
+      body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans"; background:var(--bg); color:#111827; }
+      .wrap { max-width: 860px; margin: 28px auto; padding: 0 16px; }
+      .header { display:flex; align-items:baseline; justify-content:space-between; gap:16px; }
+      .title { font-size: 22px; font-weight: 700; margin: 0; }
+      .subtitle { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+      .card { background:var(--card); border:1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+      .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-top: 14px; }
+      label { font-size: 13px; font-weight: 600; }
+      .help { font-size: 12px; color: var(--muted); margin-top: 4px; }
+      input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; background:#fff; }
+      input:focus { outline: 2px solid rgba(0,124,176,.18); border-color: rgba(0,124,176,.5); }
+      .actions { display:flex; justify-content:flex-end; gap: 10px; margin-top: 16px; }
+      button { background: var(--brand); color:#fff; border:0; padding: 10px 14px; border-radius: 10px; font-weight: 700; cursor:pointer; }
+      button:hover { filter: brightness(.95); }
+      .note { margin-top: 14px; color: var(--muted); font-size: 13px; }
+      .pill { display:inline-block; padding: 2px 10px; border-radius: 999px; background: rgba(0,124,176,.10); color: #0b4d66; font-weight: 700; font-size: 12px; }
+      @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+    </style>
   </head>
   <body>
-    <h2>Loan Eligibility Demo</h2>
-    <form action="/check" method="post">
-      <label>Annual income (USD):</label><br/>
-      <input name="annual_income" type="number" step="0.01" value="75000" required/><br/><br/>
+    <div class="wrap">
+      <div class="header">
+        <div>
+          <h1 class="title">Loan Eligibility Demo</h1>
+          <p class="subtitle">Demo underwriting: policy rules + affordability + risk banding.</p>
+        </div>
+        <span class="pill">Canary-ready</span>
+      </div>
 
-      <label>Credit score:</label><br/>
-      <input name="credit_score" type="number" value="720" required/><br/><br/>
+      <div class="card">
+        <form action="/check" method="post">
+          <div class="grid">
+            <div>
+              <label>Annual income (USD)</label>
+              <input name="annual_income" type="number" step="0.01" min="1" value="75000" required />
+              <div class="help">Must be greater than $0.</div>
+            </div>
 
-      <label>Monthly debt payments (USD):</label><br/>
-      <input name="monthly_debt_payments" type="number" step="0.01" value="600" required/><br/><br/>
+            <div>
+              <label>Credit score</label>
+              <input name="credit_score" type="number" min="300" max="850" value="720" required />
+              <div class="help">Range: 300–850.</div>
+            </div>
 
-      <label>Loan amount (USD):</label><br/>
-      <input name="loan_amount" type="number" step="0.01" value="20000" required/><br/><br/>
+            <div>
+              <label>Monthly debt payments (USD)</label>
+              <input name="monthly_debt_payments" type="number" step="0.01" min="0" value="600" required />
+              <div class="help">Minimum: $0.</div>
+            </div>
 
-      <label>Loan term (months):</label><br/>
-      <input name="loan_term_months" type="number" value="60" required/><br/><br/>
+            <div>
+              <label>Loan amount requested (USD)</label>
+              <input name="loan_amount" type="number" step="0.01" min="1000" max="100000" value="20000" required />
+              <div class="help">Range: $1,000–$100,000.</div>
+            </div>
 
-      <label>Employment years:</label><br/>
-      <input name="employment_years" type="number" step="0.1" value="3" required/><br/><br/>
+            <div>
+              <label>Loan term (months)</label>
+              <input name="loan_term_months" type="number" min="12" max="84" value="60" required />
+              <div class="help">Range: 12–84 months.</div>
+            </div>
 
-      <label>Age:</label><br/>
-      <input name="age" type="number" value="30" required/><br/><br/>
+            <div>
+              <label>Employment years</label>
+              <input name="employment_years" type="number" step="0.1" min="0" value="3" required />
+              <div class="help">Used as a stability proxy (demo).</div>
+            </div>
 
-      <button type="submit">Check eligibility</button>
-    </form>
-    <p style="margin-top: 16px;">
-      Tip: toggle <b>model_v2_enabled</b> in Unleash to switch decisions.
-    </p>
+            <div>
+              <label>Age</label>
+              <input name="age" type="number" min="18" max="120" value="30" required />
+              <div class="help">Must be 18+.</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit">Check eligibility</button>
+          </div>
+        </form>
+
+        <div class="note">
+          Tip: roll out <b>model_v2_enabled</b> gradually in Unleash (by <code>userId</code>).
+        </div>
+      </div>
+    </div>
   </body>
 </html>
