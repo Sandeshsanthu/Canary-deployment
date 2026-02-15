@@ -6,6 +6,9 @@ from model_v1 import predict as v1_predict
 from model_v2 import predict as v2_predict
 from feature_flag import is_enabled, init_unleash, shutdown_unleash
 from metrics import REQUEST_COUNT, PREDICTION_LATENCY
+from metrics import router as metrics_router
+
+
 
 import time
 
@@ -15,7 +18,9 @@ templates = Jinja2Templates(directory="templates")
 @app.on_event("startup")
 def _startup():
     init_unleash()
+    start_http_server(5000)
 
+app.include_router(metrics_router)
 @app.on_event("shutdown")
 def _shutdown():
     shutdown_unleash()

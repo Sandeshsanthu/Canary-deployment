@@ -1,9 +1,8 @@
-from prometheus_client import Counter, Histogram,generate_latest
-from flask import Response
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from fastapi import APIRouter, Response
 
-@app.route("/metrics")
+router = APIRouter()
+
+@router.get("/metrics")
 def metrics():
-    return Response(generate_latest(), mimetype="text/plain")
-
-start_http_server(5000)
-
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
