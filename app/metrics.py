@@ -1,14 +1,8 @@
-from prometheus_client import Counter, Histogram
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from fastapi import APIRouter, Response
 
-REQUEST_COUNT = Counter(
-    "prediction_requests_total",
-    "Total prediction requests",
-    ["model"]
-)
+router = APIRouter()
 
-PREDICTION_LATENCY = Histogram(
-    "prediction_latency_seconds",
-    "Prediction latency",
-    ["model"]
-)
-
+@router.get("/metrics")
+def metrics():
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
