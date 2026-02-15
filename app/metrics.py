@@ -1,14 +1,9 @@
-from prometheus_client import Counter, Histogram
+from prometheus_client import Counter, Histogram,generate_latest
+from flask import Response
 
-REQUEST_COUNT = Counter(
-    "prediction_requests_total",
-    "Total prediction requests",
-    ["model"]
-)
+@app.route("/metrics")
+def metrics():
+    return Response(generate_latest(), mimetype="text/plain")
 
-PREDICTION_LATENCY = Histogram(
-    "prediction_latency_seconds",
-    "Prediction latency",
-    ["model"]
-)
+start_http_server(5000)
 
