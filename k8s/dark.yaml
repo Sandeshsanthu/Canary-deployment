@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: sandeshs/dark-feature:
+        image: sandeshs/dark-feature@sha256:81c1481ea5ecfc2449469241171ccac40748b1eeb1e5dc156ee44e7bdf89f0e9
         ports:
         - name: http
           containerPort: 8000
