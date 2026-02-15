@@ -2,20 +2,79 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Loan Eligibility Result</title>
+    <title>Decision (Demo)</title>
+    <style>
+      body { font-family: Arial, sans-serif; max-width: 920px; margin: 24px auto; line-height: 1.35; }
+      .pill { display: inline-block; padding: 6px 10px; border-radius: 999px; font-weight: 800; }
+      .ok { background: #e9f6df; border: 1px solid #86BC25; }
+      .warn { background: #fff3cd; border: 1px solid #ED8B00; }
+      .bad { background: #f8d7da; border: 1px solid #DA291C; }
+      .card { border: 1px solid #ddd; padding: 16px; border-radius: 10px; margin: 14px 0; }
+      pre { background: #f6f6f6; padding: 12px; overflow-x: auto; }
+      .muted { color: #555; }
+    </style>
   </head>
   <body>
-    <h2>Result: {{ result.chosen.decision }} (served by {{ result.model }})</h2>
+    {% set dec = result.chosen.decision %}
+    <h2>
+      Decision:
+      {% if dec == "APPROVED" %}
+        <span class="pill ok">APPROVED</span>
+      {% elif dec == "COUNTEROFFER" or dec == "REFER" %}
+        <span class="pill warn">{{ dec }}</span>
+      {% else %}
+        <span class="pill bad">{{ dec }}</span>
+      {% endif %}
+      <span class="muted">(served by {{ result.model }})</span>
+    </h2>
 
-    <h3>Key inputs</h3>
-    <pre>{{ data }}</pre>
+    <div class="card">
+      <h3>Application summary</h3>
+      <p class="muted">Decision ID: <b>{{ result.chosen.decision_id }}</b> • Time (UTC): {{ result.chosen.timestamp_utc }} • Risk grade: <b>{{ result.chosen.risk_grade }}</b> • DTI: <b>{{ result.chosen.dti }}</b></p>
+      <pre>{{ data }}</pre>
+    </div>
 
-    <h3>Served model output</h3>
-    <pre>{{ result.chosen }}</pre>
+    <div class="card">
+      <h3>Offer / pricing</h3>
+      {% if result.chosen.offer %}
+        <p>
+          Approved amount: <b>${{ result.chosen.offer.approved_amount }}</b><br/>
+          Term: <b>{{ result.chosen.offer.term_months }}</b> months<br/>
+          APR: <b>{{ result.chosen.offer.apr_percent }}%</b><br/>
+          Origination fee: <b>${{ result.chosen.offer.origination_fee }}</b><br/>
+          Estimated monthly payment: <b>${{ result.chosen.offer.estimated_monthly_payment }}</b>
+        </p>
+      {% else %}
+        <p class="muted">No offer generated for this decision.</p>
+        {% if result.chosen.pricing %}
+          <p class="muted">
+            Pricing estimate (for transparency): APR {{ result.chosen.pricing.apr_percent }}%,
+            est. monthly payment ${{ result.chosen.pricing.estimated_monthly_payment }}
+          </p>
+        {% endif %}
+      {% endif %}
+    </div>
 
-    <h3>Shadow model output (for comparison)</h3>
- <pre>{{ result.shadow }}</pre>
+    <div class="card">
+      <h3>Reasons</h3>
+      {% if result.chosen.reasons and result.chosen.reasons|length > 0 %}
+        <pre>{{ result.chosen.reasons }}</pre>
+      {% else %}
+        <p class="muted">No policy reasons triggered.</p>
+      {% endif %}
 
-    <p><a href="/">Try another application</a></p>
+      {% if result.chosen.adverse_action_reasons %}
+        <h4>Adverse-action reasons (demo)</h4>
+        <pre>{{ result.chosen.adverse_action_reasons }}</pre>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h3>Shadow model output (comparison)</h3>
+      <p class="muted">This is what the other model would have decided.</p>
+      <pre>{{ result.shadow }}</pre>
+    </div>
+
+    <p><a href="/">Start a new application</a></p>
   </body>
 </html>
