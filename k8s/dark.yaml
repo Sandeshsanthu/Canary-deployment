@@ -10,13 +10,17 @@ spec:
   replicas: 4
   strategy:
     canary:
+      stableService: dark-feature-stable
+      canaryService: dark-feature-canary
       steps:
       - setWeight: 10
       - pause: {duration: 60}
-      - setWeight: 30
-      - pause: {duration: 60}
+      - analysis:
+          templates:
+            - templateName: dark-latency-check
       - setWeight: 50
       - pause: {duration: 60}
+      - setWeight: 100
   selector:
     matchLabels:
       app: dark-feature

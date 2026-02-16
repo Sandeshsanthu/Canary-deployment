@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: dark-latency-check
+  namespace: dark
+spec:
+  metrics:
+  - name: p95-latency
+    interval: 30s
+    count: 3
+    # Note: Ensure these thresholds (2) match your expected latency (e.g., 2 seconds)
+    successCondition: result[0] < 2
+    failureCondition: result[0] >= 2
+    provider:
+      prometheus:
+        address: http://kube-prom-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+        query: |
+          histogram_quantile(0.95,
+            sum(rate(loan_decision_latency_seconds_bucket[1m])) by (le))
+
