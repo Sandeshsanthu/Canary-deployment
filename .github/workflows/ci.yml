@@ -53,7 +53,12 @@ jobs:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           echo "Pushed digest: ${DIGEST}"
-          sed -i "s|image: sandeshs/dark-feature:.*|image: sandeshs/dark-feature@${DIGEST}|g" k8s/dark.yaml
+          grep -nE '^[[:space:]]*image:[[:space:]]*sandeshs/dark-feature' -n k8s/dark.yaml || true
+
+          sed -i -E "s|^([[:space:]]*image:[[:space:]]*sandeshs/dark-feature)([:@].*)?$|\1@${DIGEST}|" k8s/dark.yaml
+
+          echo "After update:"
+          grep -nE '^[[:space:]]*image:[[:space:]]*sandeshs/dark-feature' -n k8s/dark.yaml || true
           git diff -- k8s/dark.yaml
 
       - name: Commit and push manifest update
