@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: sandeshs/dark-feature@sha256:d6833968b4f9e0c5d4614ee00b7a8386ba5aee4c5cc59f463e935c230e8a8fae
+        image: sandeshs/dark-feature@sha256:6eb48fc04d85faba8440f0f1cdce8aae1c7c234e02256a81951f21fad93c57a3
         ports:
         - name: http
           containerPort: 8000
