@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: dark-feature
+  namespace: dark
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dark-feature
+  template:
+    metadata:
+      labels:
+        app: dark-feature
+    spec:
+      containers:
+      - name: app
+        image: sandeshs/dark-feature@sha256:6eb48fc04d85faba8440f0f1cdce8aae1c7c234e02256a81951f21fad93c57a3
+        ports:
+        - containerPort: 8000
+  strategy:
+    canary:
+      canaryMetadata:
+        labels:
+          version: canary
+      stableMetadata:
+        labels:
+          version: stable
+      trafficRouting:
+        istio:
+          virtualService:
+            name: dark-feature-vs
+            routes:
+            - http
+          destinationRule:
+            name: dark-feature-dr
+            canarySubsetName: canary
+            stableSubsetName: stable
+      steps:
+      - setWeight: 10
+      - pause: {duration: 30s}
+      - setWeight: 50
+      - pause: {duration: 30s}
+      - setWeight: 100
+
