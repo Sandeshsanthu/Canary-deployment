@@ -16,5 +16,4 @@ spec:
         address: http://kube-prom-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
         query: |
           histogram_quantile(0.95,
-            sum(rate(loan_decision_latency_seconds_bucket[1m])) by (le))
-
+            sum(rate(loan_decision_latency_seconds_bucket{app="dark-feature"}[1m])) by (le))
