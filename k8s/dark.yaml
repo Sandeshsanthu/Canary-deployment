@@ -1,25 +1,12 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: dark-feature
   namespace: dark
   labels:
     app: dark-feature
 spec:
-  replicas: 4
-  strategy:
-    canary:
-      stableService: dark-feature-stable
-      canaryService: dark-feature-canary
-      steps:
-      - setWeight: 10
-      - pause: {duration: 60}
-      - analysis:
-          templates:
-            - templateName: dark-latency-check
-      - setWeight: 50
-      - pause: {duration: 60}
-      - setWeight: 100
+  replicas: 3
   selector:
     matchLabels:
       app: dark-feature
@@ -34,7 +21,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: sandeshs/dark-feature@sha-2d18713
+        image: sandeshs/dark-feature:v2
         ports:
         - name: http
           containerPort: 8000
@@ -60,41 +47,4 @@ spec:
             port: 8000
           initialDelaySeconds: 5
           periodSeconds: 10
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: dark-feature-stable
-  namespace: dark
-  labels:
-    app: dark-feature
-spec:
-  selector:
-    app: dark-feature
-  ports:
-    - name: http
-      port: 8000
-      targetPort: 8000
-    - name: metrics
-      port: 5000
-      targetPort: 5000
-  type: LoadBalancer
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: dark-feature-canary
-  namespace: dark
-  labels:
-    app: dark-feature
-spec:
-  selector:
-    app: dark-feature
-  ports:
-    - name: http
-      port: 8000
-      targetPort: 8000
-    - name: metrics
-      port: 5000
-      targetPort: 5000
-  type: ClusterIP
+
