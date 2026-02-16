@@ -64,21 +64,37 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: dark-feature
+  name: dark-feature-stable
   namespace: dark
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "5000"
-    prometheus.io/path: "/metrics"
+  labels:
+    app: dark-feature
 spec:
   selector:
     app: dark-feature
   ports:
-  - name: http
-    port: 8000
-    targetPort: 8000
-  - name: metrics
-    port: 5000
-    targetPort: 5000
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: metrics
+      port: 5000
+      targetPort: 5000
   type: LoadBalancer
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dark-feature-canary
+  namespace: dark
+  labels:
+    app: dark-feature
+spec:
+  selector:
+    app: dark-feature
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+    - name: metrics
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP

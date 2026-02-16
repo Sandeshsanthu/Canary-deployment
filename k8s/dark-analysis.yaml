@@ -8,12 +8,15 @@ spec:
   - name: p95-latency
     interval: 30s
     count: 3
-    # Note: Ensure these thresholds (2) match your expected latency (e.g., 2 seconds)
-    successCondition: result[0] < 2
-    failureCondition: result[0] >= 2
+    successCondition: len(result) > 0 && result[0] < 2
+    failureCondition: len(result) == 0 || result[0] >= 2
     provider:
       prometheus:
         address: http://kube-prom-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
         query: |
-          histogram_quantile(0.95,
-            sum(rate(loan_decision_latency_seconds_bucket{app="dark-feature"}[1m])) by (le))
+          histogram_quantile(
+            0.95,
+            sum by (le) (
+              rate(loan_decision_latency_seconds_bucket{namespace="dark", service=~"dark-feature-(stable|canary)"}[1m])
+            )
+          )
