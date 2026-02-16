@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: dark-feature-monitor
+  namespace: monitoring
+  labels:
+    release: kube-prom
+spec:
+  selector:
+    matchLabels:
+      app: dark-feature
+  namespaceSelector:
+    matchNames:
+      - dark
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 15s

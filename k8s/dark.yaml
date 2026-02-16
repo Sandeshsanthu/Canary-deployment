@@ -4,6 +4,8 @@ kind: Rollout
 metadata:
   name: dark-feature
   namespace: dark
+  labels:
+    app: dark-feature
 spec:
   replicas: 4
   strategy:
